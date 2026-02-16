@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>New Year Surprise</title>
+<style>
+body{
+    margin:0;
+    background:black;
+    overflow:hidden;
+    font-family:consolas;
+    text-align:center;
+}
+canvas{display:block;}
+#startBtn{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    font-size:40px;
+    padding:20px 50px;
+    border:none;
+    border-radius:15px;
+    background:linear-gradient(45deg,red,orange,yellow);
+    color:white;
+    cursor:pointer;
+    box-shadow:0 0 20px gold;
+}
+.msg{
+    position:absolute;
+    color:white;
+    font-size:30px;
+    animation:fade 4s linear forwards;
+}
+@keyframes fade{
+    0%{opacity:0; transform:translateY(20px);}
+    20%{opacity:1;}
+    80%{opacity:1;}
+    100%{opacity:0; transform:translateY(-40px);}
+}
+</style>
+</head>
+<body>
+
+<button id="startBtn">START 🎆</button>
+<canvas id="c"></canvas>
+
+<script>
+const canvas=document.getElementById("c");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+let particles=[];
+let running=false;
+
+class Particle{
+constructor(x,y,color,angle,speed){
+this.x=x; this.y=y;
+this.color=color;
+this.angle=angle;
+this.speed=speed;
+this.life=100;
+}
+update(){
+this.x+=Math.cos(this.angle)*this.speed;
+this.y+=Math.sin(this.angle)*this.speed;
+this.speed*=0.97;
+this.life--;
+}
+draw(){
+ctx.fillStyle=this.color;
+ctx.fillRect(this.x,this.y,2,2);
+}
+}
+
+function boom(x,y){
+let color=`hsl(${Math.random()*360},100%,60%)`;
+for(let i=0;i<120;i++){
+particles.push(new Particle(x,y,color,Math.random()*Math.PI*2,Math.random()*6));
+}
+}
+
+const wishes=[
+"Chúc mừng năm mới 🎆",
+"Vạn sự như ý ✨",
+"Học đâu thắng đó 📚",
+"Thi đâu đỗ đó 🏆",
+"Luôn vui vẻ 😆",
+"Tràn đầy năng lượng ⚡",
+"May mắn cả năm 🍀",
+"Tiền vô như nước 💰",
+"Sức khỏe dồi dào 💪",
+"Tình duyên tới nha ❤️",
+"Mọi việc suôn sẻ 🌟",
+"Ước gì được nấy 🎯",
+"2026 bùng nổ 🚀"
+];
+
+function randomWish(){
+let div=document.createElement("div");
+div.className="msg";
+div.innerText=wishes[Math.floor(Math.random()*wishes.length)];
+div.style.left=Math.random()*80+10+"%";
+div.style.top=Math.random()*60+20+"%";
+document.body.appendChild(div);
+setTimeout(()=>div.remove(),4000);
+}
+
+function animate(){
+requestAnimationFrame(animate);
+ctx.fillStyle="rgba(0,0,0,0.2)";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+
+particles.forEach((p,i)=>{
+p.update();
+p.draw();
+if(p.life<=0) particles.splice(i,1);
+});
+
+if(running && Math.random()<0.05)
+boom(Math.random()*canvas.width,Math.random()*canvas.height/2);
+}
+animate();
+
+document.getElementById("startBtn").onclick=()=>{
+running=true;
+document.getElementById("startBtn").style.display="none";
+
+setInterval(()=>{
+boom(Math.random()*canvas.width,Math.random()*canvas.height/2);
+randomWish();
+},800);
+};
+</script>
+
+</body>
+</html>
